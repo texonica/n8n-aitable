@@ -7,7 +7,7 @@ import type {
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 
 /**
- * Aitable API Integration for n8n
+ * Aitable API Integration for n8n (Unofficial)
  * 
  * Note on searchNodesInDatasheet operation:
  * This operation fetches records from a specified datasheet directly using the
@@ -21,13 +21,14 @@ export class Aitable implements INodeType {
 	}
 
 	description: INodeTypeDescription = {
-		displayName: 'Aitable.ai',
+		displayName: 'Aitable Unofficial',
 		name: 'aitable',
+		icon: 'file:aitable.svg',
 		group: ['transform'],
 		version: 1,
-		description: 'Interact with Aitable.ai API',
+		description: 'Interact with Aitable.ai API (Unofficial Integration)',
 		defaults: {
-			name: 'Aitable',
+			name: 'Aitable Unofficial',
 		},
 		inputs: [NodeConnectionType.Main],
 		outputs: [NodeConnectionType.Main],
