@@ -52,7 +52,7 @@ export class Aitable implements INodeType {
 					{
 						name: 'Search Records in Datasheet',
 						value: 'searchNodesInDatasheet',
-						description: 'Search and retrieve records from a specific datasheet',
+						description: 'Search and retrieve records from a specific datasheet (supports both simple search and formula filtering)',
 					},
 				],
 				default: 'searchNodes',
@@ -176,12 +176,12 @@ export class Aitable implements INodeType {
 			},
 			// Search Term Field - Optional for searchNodesInDatasheet operation
 			{
-				displayName: 'Search Term',
+				displayName: 'Simple Search',
 				name: 'searchTerm',
 				type: 'string',
 				default: '',
 				required: false,
-				description: 'Term to search for within the datasheet records (leave empty to retrieve all records)',
+				description: 'Simple term to search for within the datasheet records (leave empty to retrieve all records)',
 				displayOptions: {
 					show: {
 						operation: [
@@ -189,6 +189,24 @@ export class Aitable implements INodeType {
 						],
 					},
 				},
+				placeholder: 'Example: project name',
+			},
+			// Filter By Formula Field - Optional for searchNodesInDatasheet operation
+			{
+				displayName: 'Filter By Formula',
+				name: 'filterByFormula',
+				type: 'string',
+				default: '',
+				required: false,
+				description: 'Use Aitable formula syntax for advanced filtering (e.g., {Name}="Project X")',
+				displayOptions: {
+					show: {
+						operation: [
+							'searchNodesInDatasheet',
+						],
+					},
+				},
+				placeholder: 'Example: {Name}="Project X" or OR(find("Keyword", {Description}) > 0)',
 			},
 			// Columns to Search Field - Optional for searchNodesInDatasheet operation
 			{
@@ -313,6 +331,7 @@ export class Aitable implements INodeType {
 					}
 					
 					const searchTerm = this.getNodeParameter('searchTerm', itemIndex) as string;
+					const filterByFormula = this.getNodeParameter('filterByFormula', itemIndex) as string;
 					const columnsToSearch = this.getNodeParameter('columnsToSearch', itemIndex, '') as string;
 					const maxResults = this.getNodeParameter('maxResults', itemIndex, 100) as number;
 
@@ -330,6 +349,11 @@ export class Aitable implements INodeType {
 							recordsParams.pageSize = maxResults;
 						}
 						
+						// Use filterByFormula for advanced filtering if provided
+						if (filterByFormula) {
+							recordsParams.filterByFormula = filterByFormula;
+						}
+						
 						const recordsResponse = await this.helpers.httpRequestWithAuthentication.call(
 							this,
 							'aitableApi',
@@ -345,9 +369,10 @@ export class Aitable implements INodeType {
 						);
 						
 						if (recordsResponse.success === true && recordsResponse.data && recordsResponse.data.records) {
-							// If search term is provided, filter records that contain the search term
+							// Get the records from the response
 							let records = recordsResponse.data.records;
 							
+							// If simple search term is provided, filter records locally that contain the search term
 							if (searchTerm) {
 								records = records.filter((record: any) => {
 									// Check if any field value contains the search term
