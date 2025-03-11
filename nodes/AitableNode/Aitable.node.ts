@@ -64,6 +64,11 @@ export class Aitable implements INodeType {
 						value: 'editRecord',
 						description: 'Update an existing record in a datasheet',
 					},
+					{
+						name: 'Delete Record',
+						value: 'deleteRecord',
+						description: 'Delete an existing record from a datasheet',
+					},
 				],
 				default: 'searchNodes',
 			},
@@ -525,6 +530,38 @@ export class Aitable implements INodeType {
 					show: {
 						operation: [
 							'editRecord',
+						],
+					},
+				},
+			},
+			// Datasheet ID for deleteRecord operation
+			{
+				displayName: 'Datasheet ID',
+				name: 'datasheetId',
+				type: 'string',
+				default: '',
+				required: true,
+				description: 'ID of the datasheet to delete the record from (e.g., dstXXXXXXXXXXXX)',
+				displayOptions: {
+					show: {
+						operation: [
+							'deleteRecord',
+						],
+					},
+				},
+			},
+			// Record ID Field for deleteRecord operation
+			{
+				displayName: 'Record ID',
+				name: 'recordId',
+				type: 'string',
+				default: '',
+				required: true,
+				description: 'ID of the record to delete (e.g., recXXXXXXXXXXXX)',
+				displayOptions: {
+					show: {
+						operation: [
+							'deleteRecord',
 						],
 					},
 				},
@@ -1133,6 +1170,85 @@ export class Aitable implements INodeType {
 							throw new NodeOperationError(
 								this.getNode(),
 								`Error updating record in datasheet ${datasheetId}: ${error.message}`,
+								{ itemIndex }
+							);
+						}
+					}
+				} else if (operation === 'deleteRecord') {
+					// Get parameters specific to deleteRecord operation
+					const datasheetId = this.getNodeParameter('datasheetId', itemIndex) as string;
+					const recordId = this.getNodeParameter('recordId', itemIndex) as string;
+					
+					// Validate datasheetId and recordId
+					if (!datasheetId) {
+						throw new NodeOperationError(this.getNode(), 'Datasheet ID is required', { itemIndex });
+					}
+					
+					if (!recordId) {
+						throw new NodeOperationError(this.getNode(), 'Record ID is required', { itemIndex });
+					}
+					
+					// Delete the record
+					try {
+						const recordsEndpoint = `/fusion/v1/datasheets/${datasheetId}/records`;
+						
+						// Use query parameters instead of body for record IDs
+						const recordsResponse = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'aitableApi',
+							{
+								method: 'DELETE',
+								url: recordsEndpoint,
+								baseURL: 'https://aitable.ai',
+								headers: {
+									'Content-Type': 'application/json',
+								},
+								qs: {
+									recordIds: recordId,
+								},
+							},
+						);
+						
+						if (recordsResponse.success === true) {
+							// Return success response
+							returnData.push({
+								json: {
+									success: true,
+									message: 'Record deleted successfully',
+									recordId,
+									datasheetId,
+									response: recordsResponse,
+								},
+								pairedItem: itemIndex,
+							});
+						} else {
+							// If record deletion failed or there was an issue with the response
+							returnData.push({
+								json: {
+									success: false,
+									message: 'Record deletion failed or error occurred',
+									response: recordsResponse,
+								},
+								pairedItem: itemIndex,
+							});
+						}
+					} catch (error) {
+						this.logger.error('Error deleting record: ' + error.message);
+						
+						if (this.continueOnFail()) {
+							returnData.push({
+								json: {
+									success: false,
+									message: `Error deleting record: ${error.message}`,
+									recordId,
+									datasheetId,
+								},
+								pairedItem: itemIndex,
+							});
+						} else {
+							throw new NodeOperationError(
+								this.getNode(),
+								`Error deleting record from datasheet ${datasheetId}: ${error.message}`,
 								{ itemIndex }
 							);
 						}
