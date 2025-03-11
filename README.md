@@ -86,6 +86,49 @@ When working with these different types, be sure to check the "type" property in
 * [AITable API documentation](https://developers.aitable.ai/api/)
 * [AITable Help Center](https://help.aitable.ai/)
 
+## Development
+
+### Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/texonica/n8n-aitable.git
+   ```
+
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+3. Build the node:
+   ```bash
+   pnpm build
+   ```
+
+### Releasing New Versions
+
+To release a new version:
+
+1. Update the code and commit your changes
+2. Run one of the following commands depending on the type of change:
+   ```bash
+   # For bug fixes
+   pnpm version:patch
+   
+   # For new features
+   pnpm version:minor
+   
+   # For breaking changes
+   pnpm version:major
+   ```
+3. Update the CHANGELOG.md file
+4. Commit the version changes
+5. Create a new GitHub release
+6. Publish to npm:
+   ```bash
+   pnpm release
+   ```
+
 ## License
 
-[MIT](https://github.com/n8n-io/n8n-nodes-starter/blob/master/LICENSE.md)
+[MIT](https://github.com/texonica/n8n-aitable/blob/master/LICENSE.md)
