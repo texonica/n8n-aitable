@@ -1,45 +1,75 @@
 ![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
 
-# n8n-nodes-starter
+# n8n-nodes-aitable-unofficial
 
-This repo contains example nodes to help you get started building your own custom integrations for [n8n](n8n.io). It includes the node linter and other dependencies.
+This is an n8n community node. It lets you use AITable in your n8n workflows.
 
-To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+AITable is a powerful collaborative database platform that combines the flexibility of spreadsheets with the power of databases, allowing users to create custom views, forms, and dashboards.
 
-## Prerequisites
+[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
-You need the following installed on your development machine:
+[Installation](#installation)  
+[Operations](#operations)  
+[Credentials](#credentials)  
+[Compatibility](#compatibility)  
+[Usage](#usage)  
+[Resources](#resources)  
 
-* [git](https://git-scm.com/downloads)
-* Node.js and pnpm. Minimum version Node 18. You can find instructions on how to install both using nvm (Node Version Manager) for Linux, Mac, and WSL [here](https://github.com/nvm-sh/nvm). For Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows).
-* Install n8n with:
-  ```
-  pnpm install n8n -g
-  ```
-* Recommended: follow n8n's guide to [set up your development environment](https://docs.n8n.io/integrations/creating-nodes/build/node-development-environment/).
+## Installation
 
-## Using this starter
+Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
-These are the basic steps for working with the starter. For detailed guidance on creating and publishing nodes, refer to the [documentation](https://docs.n8n.io/integrations/creating-nodes/).
+## Operations
 
-1. [Generate a new repository](https://github.com/n8n-io/n8n-nodes-starter/generate) from this template repository.
-2. Clone your new repo:
-   ```
-   git clone https://github.com/<your organization>/<your-repo-name>.git
-   ```
-3. Run `pnpm i` to install dependencies.
-4. Open the project in your editor.
-5. Browse the examples in `/nodes` and `/credentials`. Modify the examples, or replace them with your own nodes.
-6. Update the `package.json` to match your details.
-7. Run `pnpm lint` to check for errors or `pnpm lintfix` to automatically fix errors when possible.
-8. Test your node locally. Refer to [Run your node locally](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/) for guidance.
-9. Replace this README with documentation for your node. Use the [README_TEMPLATE](README_TEMPLATE.md) to get started.
-10. Update the LICENSE file to use your details.
-11. [Publish](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry) your package to npm.
+This node supports the following operations with AITable:
 
-## More information
+- **Get Node Details**: Retrieve detailed information about a specific node (datasheet, folder, form, dashboard, etc.)
+- **Get Node List**: Retrieve a list of nodes with filtering options
+- **Search Nodes**: Search for nodes based on specific criteria
 
-Refer to our [documentation on creating nodes](https://docs.n8n.io/integrations/creating-nodes/) for detailed information on building your own nodes.
+## Credentials
+
+To use this node, you need an AITable API token.
+
+### Prerequisites:
+1. Have an AITable account
+2. Generate an API token in your AITable account settings
+
+### Setting up credentials:
+1. In n8n, go to **Credentials** and select **AITable API**
+2. Enter your API token
+3. Save the credentials
+
+## Compatibility
+
+This node has been tested with n8n v1.0+ and AITable API v1.
+
+## Usage
+
+### Getting Node Details
+
+To retrieve details about a specific node in AITable:
+1. Add the AITable node to your workflow
+2. Select the "Get Node Details" operation
+3. Provide the Space ID and Node ID
+4. The node will return details including type, name, icon, and permissions
+
+### Working with Different Node Types
+
+AITable supports various node types:
+- **Datasheet**: Spreadsheet-like data
+- **Folder**: Collection of other nodes
+- **Form**: Data collection forms
+- **Dashboard**: Visual data representations
+- **Mirror**: Alternative views of data
+
+When working with these different types, be sure to check the "type" property in responses to handle the data appropriately.
+
+## Resources
+
+* [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
+* [AITable API documentation](https://developers.aitable.ai/api/)
+* [AITable Help Center](https://help.aitable.ai/)
 
 ## License
 
