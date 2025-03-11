@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-aitable-unofficial",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "n8n community node for integration with AITable",
   "type": "commonjs",
   "keywords": [
@@ -48,7 +48,6 @@
       "dist/credentials/AitableApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/ExampleNode/ExampleNode.node.js",
       "dist/nodes/HttpBin/HttpBin.node.js",
       "dist/nodes/Aitable/Aitable.node.js"
     ]
