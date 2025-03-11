@@ -1,7 +1,8 @@
 {
-  "name": "n8n-nodes-<...>",
+  "name": "n8n-nodes-aitable",
   "version": "0.1.0",
   "description": "",
+  "type": "commonjs",
   "keywords": [
     "n8n-community-node-package"
   ],

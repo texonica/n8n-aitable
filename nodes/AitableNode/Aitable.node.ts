@@ -6,7 +6,10 @@ import type {
 } from 'n8n-workflow';
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 
-export class AitableNode implements INodeType {
+export class Aitable implements INodeType {
+	constructor() {
+		// Initialize any necessary properties
+	}
 	description: INodeTypeDescription = {
 		displayName: 'Aitable.ai',
 		name: 'aitable',

@@ -8,7 +8,7 @@ import {
 export class AitableApi implements ICredentialType {
 	name = 'aitableApi';
 	displayName = 'Aitable API';
-	documentationUrl = 'https://developers.aitable.ai/api/introduction';
+	documentationUrl = 'https://developers.aitable.ai/api/reference/';
 	properties: INodeProperties[] = [
 		{
 			displayName: 'API Token',
@@ -36,8 +36,8 @@ export class AitableApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: 'https://aitable.ai',
-			url: '/fusion/v2/spaces',
+			url: '/fusion/v1/spaces',
 			method: 'GET',
 		},
 	};
-} 
+}
