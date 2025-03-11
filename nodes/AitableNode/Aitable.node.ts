@@ -191,6 +191,7 @@ export class Aitable implements INodeType {
 						{
 							method: 'GET',
 							url: endpoint,
+							baseURL: 'https://aitable.ai',
 							qs: queryParams,
 						},
 					);
