@@ -17,7 +17,22 @@ AITable is a powerful collaborative database platform that combines the flexibil
 
 ## Installation
 
-Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
+You can install this node in two ways:
+
+### Using npm
+
+```bash
+npm install n8n-nodes-aitable-unofficial
+```
+
+For more information, follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
+
+### Manual Installation
+
+1. Go to Settings > Community Nodes
+2. Select "Install"
+3. Enter `n8n-nodes-aitable-unofficial` in the "npm package name" field
+4. Click "Install"
 
 ## Operations
 
