@@ -59,6 +59,11 @@ export class Aitable implements INodeType {
 						value: 'createRecord',
 						description: 'Create a new record in a datasheet with support for all field types including linked records',
 					},
+					{
+						name: 'Edit Record',
+						value: 'editRecord',
+						description: 'Update an existing record in a datasheet',
+					},
 				],
 				default: 'searchNodes',
 			},
@@ -353,7 +358,7 @@ export class Aitable implements INodeType {
 								name: 'fieldValue',
 								type: 'string',
 								default: '',
-								description: 'The value to set for the field. For linked fields, enter the record ID(s) separated by commas.',
+								description: 'The value to set for the field. For linked fields, enter the record ID(s) separated by commas. To explicitly clear a linked field, type "null" (this will set an actual null value in the API call). Empty values will be ignored for security reasons.',
 							},
 						],
 					},
@@ -372,6 +377,154 @@ export class Aitable implements INodeType {
 					show: {
 						operation: [
 							'createRecord',
+						],
+					},
+				},
+			},
+			// Datasheet ID Field - Required for editRecord operation
+			{
+				displayName: 'Datasheet ID',
+				name: 'datasheetId',
+				type: 'string',
+				default: '',
+				required: true,
+				description: 'ID of the datasheet containing the record to edit (e.g., dstXXXXXXXXXXX)',
+				displayOptions: {
+					show: {
+						operation: [
+							'editRecord',
+						],
+					},
+				},
+				placeholder: 'dstXXXXXXXXXXX',
+				hint: 'You can find this in the URL when viewing a datasheet: https://aitable.ai/space/spcXXXX/datasheet/dst{DATASHEET_ID}/...'
+			},
+			// Record ID Field - Required for editRecord operation
+			{
+				displayName: 'Record ID',
+				name: 'recordId',
+				type: 'string',
+				default: '',
+				required: true,
+				description: 'ID of the record to edit (e.g., recXXXXXXXXXXX)',
+				displayOptions: {
+					show: {
+						operation: [
+							'editRecord',
+						],
+					},
+				},
+				placeholder: 'recXXXXXXXXXXX',
+			},
+			// Use Field Names instead of IDs toggle for editRecord
+			{
+				displayName: 'Use Field Names',
+				name: 'useFieldNames',
+				type: 'boolean',
+				default: true,
+				description: 'Whether to use field names instead of field IDs when updating a record (recommended)',
+				displayOptions: {
+					show: {
+						operation: [
+							'editRecord',
+						],
+					},
+				},
+			},
+			// Fields to Update - Required for editRecord operation
+			{
+				displayName: 'Fields',
+				name: 'fieldsUi',
+				placeholder: 'Add Field',
+				type: 'fixedCollection',
+				typeOptions: {
+					multipleValues: true,
+				},
+				displayOptions: {
+					show: {
+						operation: [
+							'editRecord',
+						],
+					},
+				},
+				options: [
+					{
+						name: 'fieldValues',
+						displayName: 'Field',
+						values: [
+							{
+								displayName: 'Field Name or ID',
+								name: 'fieldName',
+								type: 'string',
+								default: '',
+								description: 'The name or ID of the field (e.g., "Title" or fldXXXXXXXXXXX)',
+								placeholder: 'Title',
+							},
+							{
+								displayName: 'Field Type',
+								name: 'fieldType',
+								type: 'options',
+								options: [
+									{
+										name: 'Text',
+										value: 'text',
+									},
+									{
+										name: 'Number',
+										value: 'number',
+									},
+									{
+										name: 'Checkbox',
+										value: 'checkbox',
+									},
+									{
+										name: 'Select',
+										value: 'select',
+									},
+									{
+										name: 'MultiSelect',
+										value: 'multiSelect',
+									},
+									{
+										name: 'Date',
+										value: 'date',
+									},
+									{
+										name: 'Link (One-way)',
+										value: 'link',
+									},
+									{
+										name: 'Link (Two-way)',
+										value: 'twoWayLink',
+									},
+								],
+								default: 'text',
+								description: 'The type of the field',
+							},
+							{
+								displayName: 'Field Value',
+								name: 'fieldValue',
+								type: 'string',
+								default: '',
+								description: 'The value to set for the field. For linked fields, enter the record ID(s) separated by commas. To explicitly clear a linked field, type "null" (this will set an actual null value in the API call). Empty values will be ignored for security reasons.',
+							},
+						],
+					},
+				],
+				default: {},
+				description: 'Fields to update on the record',
+			},
+			// Fetch Fields - Optional for editRecord operation
+			{
+				displayName: 'Fetch Fields',
+				name: 'fetchFields',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to fetch the datasheet fields first to help with record updates',
+				displayOptions: {
+					show: {
+						operation: [
+							'editRecord',
 						],
 					},
 				},
@@ -684,8 +837,18 @@ export class Aitable implements INodeType {
 									break;
 								case 'link':
 								case 'twoWayLink':
-									// For linked records, we need an array of record IDs
-									processedValue = fieldValue.split(',').map(id => id.trim()).filter(Boolean);
+									// For linked records, handle null vs populated vs empty
+									if (fieldValue.toLowerCase() === 'null') {
+										// Use an actual null value, not a string
+										processedValue = null;
+									} else if (fieldValue === '') {
+										// For empty strings, skip this field entirely
+										// This prevents accidental clearing from automation
+										continue;
+									} else {
+										// For linked records, we need an array of record IDs
+										processedValue = fieldValue.split(',').map(id => id.trim()).filter(Boolean);
+									}
 									break;
 								default:
 									processedValue = fieldValue;
@@ -762,6 +925,214 @@ export class Aitable implements INodeType {
 							throw new NodeOperationError(
 								this.getNode(),
 								`Error creating record in datasheet ${datasheetId}: ${error.message}`,
+								{ itemIndex }
+							);
+						}
+					}
+				} else if (operation === 'editRecord') {
+					// Get parameters specific to editRecord operation
+					const datasheetId = this.getNodeParameter('datasheetId', itemIndex) as string;
+					const recordId = this.getNodeParameter('recordId', itemIndex) as string;
+					const useFieldNames = this.getNodeParameter('useFieldNames', itemIndex, true) as boolean;
+					const fetchFields = this.getNodeParameter('fetchFields', itemIndex, false) as boolean;
+					const fieldsUi = this.getNodeParameter('fieldsUi', itemIndex, {}) as {
+						fieldValues?: Array<{
+							fieldName: string;
+							fieldType: string;
+							fieldValue: string;
+						}>;
+					};
+					
+					// Prepare record object and field mappings
+					const fields: Record<string, any> = {};
+					let fieldMetadata: Record<string, any> = {};
+					let nameToIdMap: Record<string, string> = {};
+					
+					// Fetch field metadata if requested
+					if (fetchFields) {
+						try {
+							const metadataEndpoint = `/fusion/v1/datasheets/${datasheetId}/fields`;
+							
+							this.logger.info('Fetching field metadata from Aitable API');
+							
+							const metadataResponse = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'aitableApi',
+								{
+									method: 'GET',
+									url: metadataEndpoint,
+									baseURL: 'https://aitable.ai',
+									headers: {
+										'Content-Type': 'application/json',
+									},
+								},
+							);
+							
+							if (metadataResponse.success === true && metadataResponse.data && metadataResponse.data.fields) {
+								// Process field metadata
+								fieldMetadata = metadataResponse.data.fields.reduce((acc: Record<string, any>, field: any) => {
+									acc[field.id] = field;
+									return acc;
+								}, {});
+								
+								// Create mapping from field names to field IDs
+								nameToIdMap = metadataResponse.data.fields.reduce((acc: Record<string, string>, field: any) => {
+									acc[field.name.toLowerCase()] = field.id;
+									return acc;
+								}, {});
+								
+								this.logger.info(`Successfully fetched metadata for ${Object.keys(fieldMetadata).length} fields`);
+							}
+						} catch (error) {
+							this.logger.error('Error fetching field metadata: ' + error.message);
+							// Continue without metadata, but warn the user
+							throw new NodeOperationError(
+								this.getNode(),
+								`Failed to fetch field metadata: ${error.message}. Disable "Fetch Fields" or check your connection to Aitable.`,
+								{ itemIndex }
+							);
+						}
+					}
+					
+					// Process field values from UI
+					if (fieldsUi.fieldValues && fieldsUi.fieldValues.length > 0) {
+						for (const field of fieldsUi.fieldValues) {
+							const { fieldName, fieldType, fieldValue } = field;
+							
+							if (!fieldName) {
+								continue; // Skip if no field name is provided
+							}
+							
+							// Determine field key (name or ID based on useFieldNames)
+							let fieldKey = fieldName;
+							
+							// If using field names but we have a name->ID mapping from fetched metadata, use it
+							if (!useFieldNames || (fetchFields && nameToIdMap[fieldName.toLowerCase()])) {
+								if (fetchFields && nameToIdMap[fieldName.toLowerCase()]) {
+									// If we fetched metadata and found a matching field name, use its ID
+									fieldKey = nameToIdMap[fieldName.toLowerCase()];
+								}
+								// Otherwise, assume fieldName is already an ID
+							}
+							
+							// Process field based on type
+							let processedValue;
+							switch (fieldType) {
+								case 'text':
+									processedValue = fieldValue;
+									break;
+								case 'number':
+									processedValue = fieldValue === '' ? null : Number(fieldValue);
+									break;
+								case 'checkbox':
+									processedValue = fieldValue.toLowerCase() === 'true';
+									break;
+								case 'select':
+									processedValue = fieldValue;
+									break;
+								case 'multiSelect':
+									processedValue = fieldValue.split(',').map(option => option.trim()).filter(Boolean);
+									break;
+								case 'date':
+									// If the value looks like a timestamp, use it as is
+									if (/^\d+$/.test(fieldValue)) {
+										processedValue = Number(fieldValue);
+									} else {
+										// Otherwise, treat it as an ISO string
+										processedValue = fieldValue;
+									}
+									break;
+								case 'link':
+								case 'twoWayLink':
+									// For linked records, handle null vs populated vs empty
+									if (fieldValue.toLowerCase() === 'null') {
+										// Use an actual null value, not a string
+										processedValue = null;
+									} else if (fieldValue === '') {
+										// For empty strings, skip this field entirely
+										// This prevents accidental clearing from automation
+										continue;
+									} else {
+										// For linked records, we need an array of record IDs
+										processedValue = fieldValue.split(',').map(id => id.trim()).filter(Boolean);
+									}
+									break;
+								default:
+									processedValue = fieldValue;
+							}
+							
+							fields[fieldKey] = processedValue;
+						}
+					}
+					
+					// Create the record
+					try {
+						const recordsEndpoint = `/fusion/v1/datasheets/${datasheetId}/records`;
+						const recordsData: Record<string, any> = {
+							records: [
+								{
+									recordId,
+									fields,
+								},
+							],
+						};
+						
+						// If using field names, specify fieldKey as "name"
+						if (useFieldNames) {
+							recordsData.fieldKey = 'name';
+						}
+						
+						const recordsResponse = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'aitableApi',
+							{
+								method: 'PATCH',
+								url: recordsEndpoint,
+								baseURL: 'https://aitable.ai',
+								headers: {
+									'Content-Type': 'application/json',
+								},
+								body: recordsData,
+							},
+						);
+						
+						if (recordsResponse.success === true && recordsResponse.data && recordsResponse.data.records) {
+							// Return the updated record
+							const updatedRecord = recordsResponse.data.records[0];
+							returnData.push({
+								json: {
+									...updatedRecord,
+									datasheetId,
+								},
+								pairedItem: itemIndex,
+							});
+						} else {
+							// If no record was updated or there was an issue with the response
+							returnData.push({
+								json: {
+									success: false,
+									message: 'Record update failed or error occurred',
+									response: recordsResponse,
+								},
+								pairedItem: itemIndex,
+							});
+						}
+					} catch (error) {
+						this.logger.error('Error updating record: ' + error.message);
+						
+						if (this.continueOnFail()) {
+							returnData.push({
+								json: {
+									success: false,
+									message: `Error updating record: ${error.message}`,
+									datasheetId,
+								},
+								pairedItem: itemIndex,
+							});
+						} else {
+							throw new NodeOperationError(
+								this.getNode(),
+								`Error updating record in datasheet ${datasheetId}: ${error.message}`,
 								{ itemIndex }
 							);
 						}
