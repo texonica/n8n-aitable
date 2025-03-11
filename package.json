@@ -1,20 +1,22 @@
 {
   "name": "n8n-nodes-aitable-unofficial",
-  "version": "0.1.0",
-  "description": "",
+  "version": "0.1.1",
+  "description": "n8n community node for integration with AITable",
   "type": "commonjs",
   "keywords": [
-    "n8n-community-node-package"
+    "n8n-community-node-package",
+    "aitable",
+    "n8n"
   ],
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://github.com/yourusername/n8n-nodes-aitable-unofficial",
   "author": {
-    "name": "",
-    "email": ""
+    "name": "Your Name",
+    "email": "your.email@example.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/<...>/n8n-nodes-<...>.git"
+    "url": "https://github.com/yourusername/n8n-nodes-aitable-unofficial.git"
   },
   "engines": {
     "node": ">=18.10",
@@ -44,7 +46,7 @@
     "nodes": [
       "dist/nodes/ExampleNode/ExampleNode.node.js",
       "dist/nodes/HttpBin/HttpBin.node.js",
-      "dist/nodes/AitableNode/Aitable.node.js"
+      "dist/nodes/Aitable/Aitable.node.js"
     ]
   },
   "devDependencies": {

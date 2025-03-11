@@ -4,7 +4,7 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
-import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
+import { NodeOperationError } from 'n8n-workflow';
 
 /**
  * Aitable API Integration for n8n (Unofficial)
@@ -30,8 +30,8 @@ export class Aitable implements INodeType {
 		defaults: {
 			name: 'Aitable Unofficial',
 		},
-		inputs: [NodeConnectionType.Main],
-		outputs: [NodeConnectionType.Main],
+		inputs: ['main'],
+		outputs: ['main'],
 		credentials: [
 			{
 				name: 'aitableApi',
@@ -46,29 +46,34 @@ export class Aitable implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'Search Nodes',
-						value: 'searchNodes',
-						description: 'Search for nodes (datasheets, folders, etc.) in a space',
-					},
-					{
-						name: 'Search Records in Datasheet',
-						value: 'searchNodesInDatasheet',
-						description: 'Search and retrieve records from a specific datasheet (supports both simple search and formula filtering)',
-					},
-					{
 						name: 'Create Record',
 						value: 'createRecord',
 						description: 'Create a new record in a datasheet with support for all field types including linked records',
-					},
-					{
-						name: 'Edit Record',
-						value: 'editRecord',
-						description: 'Update an existing record in a datasheet',
+						action: 'Create a new record in a datasheet with support for all field types including linked records',
 					},
 					{
 						name: 'Delete Record',
 						value: 'deleteRecord',
 						description: 'Delete an existing record from a datasheet',
+						action: 'Delete an existing record from a datasheet',
+					},
+					{
+						name: 'Edit Record',
+						value: 'editRecord',
+						description: 'Update an existing record in a datasheet',
+						action: 'Update an existing record in a datasheet',
+					},
+					{
+						name: 'Search Nodes',
+						value: 'searchNodes',
+						description: 'Search for nodes (datasheets, folders, etc.) in a space',
+						action: 'Search for nodes datasheets folders etc in a space',
+					},
+					{
+						name: 'Search Records in Datasheet',
+						value: 'searchNodesInDatasheet',
+						description: 'Search and retrieve records from a specific datasheet (supports both simple search and formula filtering)',
+						action: 'Search and retrieve records from a specific datasheet supports both simple search and formula filtering',
 					},
 				],
 				default: 'searchNodes',
@@ -89,6 +94,10 @@ export class Aitable implements INodeType {
 				type: 'options',
 				options: [
 					{
+						name: 'Dashboard',
+						value: 'Dashboard',
+					},
+					{
 						name: 'Datasheet',
 						value: 'Datasheet',
 					},
@@ -99,10 +108,6 @@ export class Aitable implements INodeType {
 					{
 						name: 'Form',
 						value: 'Form',
-					},
-					{
-						name: 'Dashboard',
-						value: 'Dashboard',
 					},
 					{
 						name: 'Mirror',
@@ -125,7 +130,6 @@ export class Aitable implements INodeType {
 				name: 'query',
 				type: 'string',
 				default: '',
-				required: false,
 				description: 'Search nodes by name - partial matches supported',
 				displayOptions: {
 					show: {
@@ -196,7 +200,6 @@ export class Aitable implements INodeType {
 				name: 'searchTerm',
 				type: 'string',
 				default: '',
-				required: false,
 				description: 'Simple term to search for within the datasheet records (leave empty to retrieve all records)',
 				displayOptions: {
 					show: {
@@ -213,7 +216,6 @@ export class Aitable implements INodeType {
 				name: 'filterByFormula',
 				type: 'string',
 				default: '',
-				required: false,
 				description: 'Use Aitable formula syntax for advanced filtering (e.g., {Name}="Project X")',
 				displayOptions: {
 					show: {
@@ -230,7 +232,6 @@ export class Aitable implements INodeType {
 				name: 'columnsToSearch',
 				type: 'string',
 				default: '',
-				required: false,
 				description: 'Comma-separated list of column IDs to search within. Leave empty to search all columns.',
 				displayOptions: {
 					show: {
@@ -246,7 +247,6 @@ export class Aitable implements INodeType {
 				name: 'maxResults',
 				type: 'number',
 				default: 100,
-				required: false,
 				description: 'Maximum number of results to return (1-1000)',
 				displayOptions: {
 					show: {
@@ -324,36 +324,36 @@ export class Aitable implements INodeType {
 								type: 'options',
 								options: [
 									{
-										name: 'Text',
-										value: 'text',
-									},
-									{
-										name: 'Number',
-										value: 'number',
-									},
-									{
 										name: 'Checkbox',
 										value: 'checkbox',
-									},
-									{
-										name: 'Select',
-										value: 'select',
-									},
-									{
-										name: 'MultiSelect',
-										value: 'multiSelect',
 									},
 									{
 										name: 'Date',
 										value: 'date',
 									},
 									{
-										name: 'Link (One-way)',
+										name: 'Link (One-Way)',
 										value: 'link',
 									},
 									{
-										name: 'Link (Two-way)',
+										name: 'Link (Two-Way)',
 										value: 'twoWayLink',
+									},
+									{
+										name: 'MultiSelect',
+										value: 'multiSelect',
+									},
+									{
+										name: 'Number',
+										value: 'number',
+									},
+									{
+										name: 'Select',
+										value: 'select',
+									},
+									{
+										name: 'Text',
+										value: 'text',
 									},
 								],
 								default: 'text',
@@ -472,36 +472,36 @@ export class Aitable implements INodeType {
 								type: 'options',
 								options: [
 									{
-										name: 'Text',
-										value: 'text',
-									},
-									{
-										name: 'Number',
-										value: 'number',
-									},
-									{
 										name: 'Checkbox',
 										value: 'checkbox',
-									},
-									{
-										name: 'Select',
-										value: 'select',
-									},
-									{
-										name: 'MultiSelect',
-										value: 'multiSelect',
 									},
 									{
 										name: 'Date',
 										value: 'date',
 									},
 									{
-										name: 'Link (One-way)',
+										name: 'Link (One-Way)',
 										value: 'link',
 									},
 									{
-										name: 'Link (Two-way)',
+										name: 'Link (Two-Way)',
 										value: 'twoWayLink',
+									},
+									{
+										name: 'MultiSelect',
+										value: 'multiSelect',
+									},
+									{
+										name: 'Number',
+										value: 'number',
+									},
+									{
+										name: 'Select',
+										value: 'select',
+									},
+									{
+										name: 'Text',
+										value: 'text',
 									},
 								],
 								default: 'text',
