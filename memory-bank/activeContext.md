@@ -1,46 +1,51 @@
 # Active Context
 
 ## Current Focus
-The project is currently in a maintenance and enhancement phase. The core functionality for interacting with AITable is implemented, but opportunities exist for expanding capabilities and improving user experience.
+The project is currently in a more developed state than initially described. The core functionality for interacting with AITable is implemented, and the node now supports both read and write operations, providing a comprehensive integration with AITable.
 
 ## Recent Changes
-- Package name updated to "n8n-nodes-aitable-unofficial" to clarify community status
-- Version bumped to 0.1.6 with minor fixes and improvements
-- Documentation enhancements in README.md
+- Package name is "n8n-nodes-aitable-unofficial" to clarify community status
+- Current version is 0.1.6 with icon improvements and optimizations
+- Documentation enhanced in README.md with detailed usage examples
+- Support for all node types implemented (datasheets, folders, forms, dashboards, mirrors)
 
 ## Active Decisions
 
 ### API Coverage
-- The node currently focuses on read operations (retrieving data)
-- Decision to be made about implementing write operations (creating/updating data)
-- Considering adding support for advanced filtering and sorting capabilities
+- The node now supports both read operations (retrieving data) and write operations (creating/updating/deleting data)
+- The following operations are implemented:
+  - Search Nodes: Find nodes (datasheets, folders, forms, dashboards) in a space
+  - Search Records in Datasheet: Search and retrieve records from a specific datasheet
+  - Create Record: Create new records in datasheets
+  - Edit Record: Update existing records in datasheets
+  - Delete Record: Remove records from datasheets
 
 ### User Experience
-- Evaluating the node configuration UI for potential improvements
-- Exploring options for better error handling and user feedback
-- Considering enhanced documentation with more usage examples
+- Node configuration UI includes specific options for each operation type
+- Error handling provides detailed feedback on API interaction issues
+- Documentation includes examples for all supported operations
 
 ### Technical Direction
-- Maintaining compatibility with the latest n8n versions
-- Staying aligned with AITable API updates
-- Exploring options for handling large datasets efficiently
+- Maintaining compatibility with the latest n8n versions (compatible with n8n v1.0+)
+- Aligned with AITable API v1
+- Support for all field types including linked records
 
 ## Next Steps
 
 ### Short Term
-1. Review and address any open issues
-2. Consider adding support for additional node types
-3. Enhance error handling with more specific messages
-4. Improve documentation with additional examples
+1. Enhance error handling for edge cases
+2. Improve documentation with more complex workflow examples
+3. Add support for batch operations to improve performance
+4. Update dependencies to latest versions
 
 ### Medium Term
-1. Implement write operations (POST, PUT, DELETE)
-2. Add support for webhooks to react to AITable changes
-3. Improve handling of large datasets with pagination
-4. Add more advanced filtering options
+1. Implement webhooks support to react to AITable changes
+2. Add support for AITable advanced filtering capabilities
+3. Improve handling of large datasets with optimized pagination
+4. Create automated tests for improved reliability
 
 ### Long Term
-1. Comprehensive test suite for automated testing
-2. Consider custom UI components for better configuration experience
-3. Explore deeper integration with AITable's advanced features
-4. Monitor for potential AITable API version changes 
+1. Support for AITable's collaborative features
+2. Custom UI components for better configuration experience
+3. Extended support for complex data relationships
+4. Monitor for AITable API version changes and update accordingly 

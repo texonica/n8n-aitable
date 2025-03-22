@@ -47,6 +47,7 @@
 - Request rate limits may apply
 - API version compatibility must be maintained (currently v1)
 - Authentication is token-based only
+- Some complex data relationships require special handling
 
 ### n8n Integration Constraints
 - Must follow n8n community node structure
@@ -62,9 +63,12 @@ n8n-aitable/
 │   └── AitableApi.credentials.ts
 ├── nodes/                     # Node definitions
 │   └── Aitable/
-│       └── Aitable.node.ts
+│       ├── Aitable.node.ts    # Main node implementation
+│       └── aitable.svg        # Node icon
 ├── dist/                      # Compiled output (generated)
 ├── package.json               # Project configuration
+├── README.md                  # Documentation
+├── CHANGELOG.md               # Version history
 └── tsconfig.json              # TypeScript configuration
 ```
 
@@ -73,6 +77,8 @@ n8n-aitable/
 ### package.json
 - Defines project metadata, dependencies, and scripts
 - Contains n8n-specific configuration for node and credential registration
+- Name set to "n8n-nodes-aitable-unofficial" to clarify community status
+- Current version is 0.1.6
 
 ### tsconfig.json
 - TypeScript compiler configuration
@@ -81,4 +87,16 @@ n8n-aitable/
 
 ### ESLint & Prettier
 - Code quality and style enforcement
-- n8n-specific linting rules via eslint-plugin-n8n-nodes-base 
+- n8n-specific linting rules via eslint-plugin-n8n-nodes-base
+
+## API Integration
+
+### Endpoints Used
+- `/fusion/v1/spaces/${spaceId}/nodes` - For searching nodes
+- `/fusion/v1/datasheets/${datasheetId}/records` - For datasheet operations
+- Other endpoints for specific node operations
+
+### Authentication
+- Bearer token authentication
+- Token stored securely in n8n credentials
+- Validated on node execution 
