@@ -1,0 +1,40 @@
+# Cursor Rules for n8n-aitable Project
+
+## Code Style Patterns
+- Use camelCase for variable and function names
+- Use PascalCase for interfaces, classes, and types
+- Follow n8n community node best practices for naming and structure
+- Maintain consistent error handling patterns across operations
+- Include JSDoc comments for public functions and interfaces
+
+## Project Structure
+- Keep node implementation in nodes/Aitable/Aitable.node.ts
+- Keep credential implementation in credentials/AitableApi.credentials.ts
+- Place build artifacts in the dist/ directory
+- Follow n8n's node and credential registration patterns in package.json
+
+## Implementation Patterns
+- Operations are implemented as methods inside the execute function
+- API requests use the built-in https module
+- Error handling follows a consistent pattern of specific error messages
+- Configuration options use n8n's standard property types and validation
+
+## Development Workflow
+- Use pnpm instead of npm for package management
+- Run pnpm build to compile TypeScript and bundle the package
+- Use pnpm dev for watch mode during development
+- Use version scripts (version:patch, version:minor, version:major) for versioning
+- Update CHANGELOG.md with each version change
+- Use pnpm release for publishing to npm
+
+## Testing
+- Manual testing through n8n workflow editor
+- Test each operation with valid and invalid inputs
+- Verify error handling by triggering expected error conditions
+- Test with different AITable node types to ensure proper handling
+
+## Documentation
+- Maintain comprehensive README.md with installation and usage instructions
+- Include examples for each operation
+- Document changes in CHANGELOG.md with semantic versioning
+- Follow n8n community node documentation standards 
